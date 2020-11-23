@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name     4chan WebM Downloader
-// @version  1
-// @grant    GM.xmlHttpRequest
-// @grant    GM_xmlHttpRequest
-// @match    *://boards.4chan.org/*
-// @match    *://boards.4channel.org/*
-// @require  https://raw.githubusercontent.com/ankitrohatgi/tarballjs/master/tarball.js
+// @name        Imageboard WebM Downloader
+// @description A userscript for downloading all WebMs on an imageboard thread into a tarball.
+// @homepageURL https://github.com/Zipdox/imageboard-webm-downloader
+// @version     1.0
+// @grant       GM.xmlHttpRequest
+// @grant       GM_xmlHttpRequest
+// @match       *://boards.4chan.org/*
+// @match       *://boards.4channel.org/*
+// @require     https://raw.githubusercontent.com/ankitrohatgi/tarballjs/master/tarball.js
 // ==/UserScript==
 
 const navLinks = document.getElementsByClassName('navLinks desktop')[0];
