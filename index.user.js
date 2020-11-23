@@ -2,7 +2,7 @@
 // @name        Imageboard WebM Downloader
 // @description A userscript for downloading all WebMs on an imageboard thread into a tarball.
 // @homepageURL https://github.com/Zipdox/imageboard-webm-downloader
-// @version     1.0
+// @version     1.1
 // @grant       GM.xmlHttpRequest
 // @grant       GM_xmlHttpRequest
 // @match       *://boards.4chan.org/*
@@ -25,12 +25,21 @@ downloadButton.onclick = async function (){
     var tar = new tarball.TarWriter();
     for(i = 0; i < WebMURLs.length; i++){
         downloadButton.innerHTML = `Fetching WebM ${i+1}/${WebMURLs.length}`
-        var WebMBuffer = await fetchWebm(WebMURLs[i]);
+        console.log('Fetching WebM', WebMURLs[i]);
+        var WebMBuffer = await fetchWebm(WebMURLs[i]).catch((error)=>{
+            console.error(error);
+        });
         var splitUrl = WebMURLs[i].split('/');
         tar.addFileArrayBuffer(splitUrl[splitUrl.length - 1], WebMBuffer.response);
     }
     downloadButton.innerHTML = 'Generating tar file...';
-    tar.download('webms.tar');
+    var tarName = 'webms';
+    try{
+        tarName = document.getElementsByClassName('postNum desktop')[0].getElementsByTagName('a')[1].textContent;
+    }catch(e){
+        console.error(e);
+    }
+    tar.download(tarName + '.tar');
     downloadButton.innerHTML = 'Download WebMs';
 }
 
@@ -49,3 +58,4 @@ function fetchWebm(url){
         });
     })
 }
+
