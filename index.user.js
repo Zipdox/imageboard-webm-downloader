@@ -1,0 +1,49 @@
+// ==UserScript==
+// @name     4chan WebM Downloader
+// @version  1
+// @grant    GM.xmlHttpRequest
+// @grant    GM_xmlHttpRequest
+// @match    *://boards.4chan.org/*
+// @match    *://boards.4channel.org/*
+// @require  https://raw.githubusercontent.com/ankitrohatgi/tarballjs/master/tarball.js
+// ==/UserScript==
+
+const navLinks = document.getElementsByClassName('navLinks desktop')[0];
+const downloadButton = document.createElement('button');
+downloadButton.innerHTML = 'Download WebMs';
+navLinks.appendChild(downloadButton);
+
+downloadButton.onclick = async function (){
+    if(downloadButton.innerHTML != 'Download WebMs') return;
+    var WebMURLs = [];
+    for(hyperlink of document.getElementsByTagName('a')){
+        if(hyperlink.href.toLowerCase().endsWith('.webm') && !WebMURLs.includes(hyperlink.href.toLowerCase())) WebMURLs.push(hyperlink.href);
+    }
+
+    var tar = new tarball.TarWriter();
+    for(i = 0; i < WebMURLs.length; i++){
+        downloadButton.innerHTML = `Fetching WebM ${i+1}/${WebMURLs.length}`
+        var WebMBuffer = await fetchWebm(WebMURLs[i]);
+        var splitUrl = WebMURLs[i].split('/');
+        tar.addFileArrayBuffer(splitUrl[splitUrl.length - 1], WebMBuffer.response);
+    }
+    downloadButton.innerHTML = 'Generating tar file...';
+    tar.download('webms.tar');
+    downloadButton.innerHTML = 'Download WebMs';
+}
+
+function fetchWebm(url){
+    return new Promise((resolve, reject)=>{
+        GM.xmlHttpRequest({
+            method: 'GET',
+            url: url,
+            responseType: 'arraybuffer',
+            onload: function (response) {
+                resolve(response);
+            },
+            onerror: function(){
+                reject();
+            }
+        });
+    })
+}
